@@ -279,7 +279,7 @@ export function ArmesClient({ armes: initialArmes, membres }: ArmesClientProps) 
               </div>
               <div className="space-y-2">
                 <Label>Assignée à</Label>
-                <Select value={form.membre_id} onValueChange={(v) => setForm({ ...form, membre_id: v })}>
+                <Select value={form.membre_id} onValueChange={(v) => setForm({ ...form, membre_id: v ?? "" })}>
                   <SelectTrigger><SelectValue placeholder="Non assignée" /></SelectTrigger>
                   <SelectContent>
                     {membres.map(m => (

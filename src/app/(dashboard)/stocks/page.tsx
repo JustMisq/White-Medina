@@ -1,0 +1,62 @@
+import { createClient } from "@/lib/supabase/server";
+import type { StockDrogue, Munition, StockMatos } from "@/types";
+import { StocksClient } from "@/components/stocks/stocks-client";
+import { Card, CardContent } from "@/components/ui/card";
+
+export default async function StocksPage() {
+  const supabase = await createClient();
+
+  const [{ data: stocks }, { data: munitions }, { data: matos }] = await Promise.all([
+    supabase.from("stocks_drogue").select("*").order("produit"),
+    supabase.from("munitions").select("*").order("calibre"),
+    supabase.from("stocks_matos").select("*").order("categorie").order("nom"),
+  ]);
+
+  const stocksData = (stocks as StockDrogue[] | null) ?? [];
+  const munitionsData = (munitions as Munition[] | null) ?? [];
+  const matosData = (matos as StockMatos[] | null) ?? [];
+
+  const valeurTotale = stocksData.reduce((acc, s) => acc + s.quantite_g * (s.prix_revente_g ?? 0), 0);
+  const totalMunitions = munitionsData.reduce((acc, m) => acc + m.quantite, 0);
+  const totalMatos = matosData.reduce((acc, m) => acc + m.quantite, 0);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Stocks illégaux</h1>
+        <p className="text-muted-foreground">Drogue, munitions &amp; matos</p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold text-amber-400">
+              {new Intl.NumberFormat("fr-FR").format(valeurTotale)}$
+            </div>
+            <p className="text-sm text-muted-foreground">Valeur drogue (revente)</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold">{stocksData.length}</div>
+            <p className="text-sm text-muted-foreground">Produits en stock</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold">{totalMunitions.toLocaleString()}</div>
+            <p className="text-sm text-muted-foreground">Munitions totales</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold">{totalMatos.toLocaleString()}</div>
+            <p className="text-sm text-muted-foreground">Pièces de matos</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <StocksClient stocks={stocksData} munitions={munitionsData} matos={matosData} />
+    </div>
+  );
+}

@@ -276,7 +276,7 @@ export function BusinessClient({ business: initialBusiness, membres }: BusinessC
               </div>
               <div className="space-y-2">
                 <Label>Gérant</Label>
-                <Select value={form.gerant_id} onValueChange={(v) => setForm({ ...form, gerant_id: v })}>
+                <Select value={form.gerant_id} onValueChange={(v) => setForm({ ...form, gerant_id: v ?? "" })}>
                   <SelectTrigger><SelectValue placeholder="Aucun" /></SelectTrigger>
                   <SelectContent>
                     {membres.map(m => (
@@ -287,7 +287,7 @@ export function BusinessClient({ business: initialBusiness, membres }: BusinessC
               </div>
               <div className="space-y-2">
                 <Label>Suspicion (1-5)</Label>
-                <Select value={form.niveau_suspicion} onValueChange={(v) => setForm({ ...form, niveau_suspicion: v })}>
+                <Select value={form.niveau_suspicion} onValueChange={(v) => setForm({ ...form, niveau_suspicion: v ?? "" })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">1 — Très bas</SelectItem>

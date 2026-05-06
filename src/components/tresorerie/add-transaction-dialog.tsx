@@ -174,7 +174,7 @@ export function AddTransactionDialog({ membres }: AddTransactionDialogProps) {
             <Label>Membre lié <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
             <Select
               value={form.membre_id}
-              onValueChange={(v) => setForm({ ...form, membre_id: v })}
+              onValueChange={(v) => setForm({ ...form, membre_id: v ?? "" })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Aucun" />

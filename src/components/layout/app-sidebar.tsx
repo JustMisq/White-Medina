@@ -16,6 +16,9 @@ import {
   KeyRound,
   Car,
   Settings,
+  Menu,
+  X,
+  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -56,7 +59,13 @@ export function AppSidebar() {
   const supabase = createClient();
   const [pseudo, setPseudo] = useState<string | null>(null);
   const [logoError, setLogoError] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { rang, permissions, loading: permsLoading } = usePermissions();
+
+  // Ferme le menu mobile lors de la navigation
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     (async () => {
@@ -78,6 +87,7 @@ export function AppSidebar() {
   };
 
   const isGerant = rang === "Gérant";
+  const isBrasDroit = rang === "Bras Droit";
 
   function isVisible(section: string): boolean {
     if (permsLoading) return true; // avoid flicker while loading
@@ -87,17 +97,17 @@ export function AppSidebar() {
 
   const visibleMain    = navMain.filter((item) => isVisible(item.section));
   const visibleIllegal = navIllegal.filter((item) => isVisible(item.section));
+  const canSeeLogsSection = isGerant || isBrasDroit;
 
-  return (
-    <aside className="flex h-screen w-60 flex-col border-r border-border bg-sidebar">
+  const sidebarContent = (
+    <aside className="flex h-full w-60 flex-col border-r border-border bg-sidebar">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 px-5 border-b border-border">
+      <div className="flex h-16 items-center gap-3 px-5 border-b border-border shrink-0">
         {logoError ? (
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-lg shadow-primary/30">
             <span className="text-sm font-black text-white tracking-tight">WM</span>
           </div>
         ) : (
-          // Remplace /logo.png dans le dossier public/ par ton image
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src="/logo.png"
@@ -159,10 +169,30 @@ export function AppSidebar() {
             })}
           </>
         )}
+
+        {canSeeLogsSection && (
+          <>
+            <div className="px-3 pt-4 pb-1">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">Admin</p>
+            </div>
+            <Link
+              href="/logs"
+              className={cn(
+                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all",
+                pathname === "/logs"
+                  ? "bg-primary/15 text-primary border border-primary/20"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <ScrollText className={cn("h-4 w-4 shrink-0", pathname === "/logs" && "text-primary")} />
+              Logs
+            </Link>
+          </>
+        )}
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-border p-3 space-y-1">
+      <div className="border-t border-border p-3 space-y-1 shrink-0">
         {(pseudo || rang) && (
           <div className="flex items-center gap-2.5 rounded-md px-3 py-2 mb-1">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary text-xs font-bold">
@@ -201,5 +231,45 @@ export function AppSidebar() {
         </button>
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <div className="hidden md:flex h-screen w-60 shrink-0 flex-col">
+        {sidebarContent}
+      </div>
+
+      {/* Mobile: hamburger button */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="fixed top-4 left-4 z-40 flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-sidebar shadow-md md:hidden"
+        aria-label="Ouvrir le menu"
+      >
+        <Menu className="h-5 w-5 text-foreground" />
+      </button>
+
+      {/* Mobile: overlay + drawer */}
+      {mobileOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40 bg-black/60 md:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+          {/* Drawer */}
+          <div className="fixed inset-y-0 left-0 z-50 flex h-full w-60 md:hidden">
+            {sidebarContent}
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="absolute top-4 right-[-44px] flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-sidebar shadow-md"
+              aria-label="Fermer le menu"
+            >
+              <X className="h-5 w-5 text-foreground" />
+            </button>
+          </div>
+        </>
+      )}
+    </>
   );
 }

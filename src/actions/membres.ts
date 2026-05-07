@@ -3,6 +3,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { Rang, StatutMembre } from "@/types";
+import { createLog } from "./logs";
 
 export interface CreateMembreInput {
   email: string;
@@ -58,6 +59,13 @@ export async function createMembre(input: CreateMembreInput): Promise<{ error?: 
     return { error: dbError.message };
   }
 
+  await createLog({
+    action: "membre.create",
+    section: "membres",
+    description: `Ajout du membre ${input.pseudo} (${input.rang})`,
+    meta: { pseudo: input.pseudo, rang: input.rang },
+  });
+
   return {};
 }
 
@@ -77,5 +85,13 @@ export async function updateMembre(input: UpdateMembreInput): Promise<{ error?: 
     .eq("id", input.id);
 
   if (error) return { error: error.message };
+
+  await createLog({
+    action: "membre.update",
+    section: "membres",
+    description: `Modification du membre ${input.pseudo} (${input.rang})`,
+    meta: { id: input.id, pseudo: input.pseudo, rang: input.rang },
+  });
+
   return {};
 }

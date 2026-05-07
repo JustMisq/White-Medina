@@ -235,3 +235,15 @@ export interface Plaque {
   created_at: string;
   updated_at: string;
 }
+
+// ─── Logs ────────────────────────────────────────────────────────────────────
+export interface Log {
+  id: string;
+  action: string;
+  section: string;
+  description: string;
+  auteur_id?: string;
+  auteur_pseudo?: string;
+  meta: Record<string, unknown>;
+  created_at: string;
+}

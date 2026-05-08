@@ -207,3 +207,15 @@ export const RANGS_GERES: Rang[] = [
 ];
 
 export type PermissionsMap = Partial<Record<Section, { peut_voir: boolean; peut_modifier: boolean }>>;
+
+// ─── Logs ───────────────────────────────────────────────────────────────────
+export interface Log {
+  id: string;
+  action: string;
+  section: string;
+  description: string;
+  auteur_id?: string;
+  auteur_pseudo?: string;
+  meta: Record<string, unknown>;
+  created_at: string;
+}

@@ -219,3 +219,40 @@ export interface Log {
   meta: Record<string, unknown>;
   created_at: string;
 }
+
+// ─── Plaques ─────────────────────────────────────────────────────────────────
+export type TypeVehicule = "voiture" | "moto" | "camion" | "quad" | "autre";
+export type StatutPlaque = "légale" | "volée" | "fausse" | "inconnue";
+
+export interface Plaque {
+  id: string;
+  numero: string;
+  marque?: string;
+  modele?: string;
+  couleur?: string;
+  type_vehicule: TypeVehicule;
+  statut: StatutPlaque;
+  contact_id?: string;
+  image_url?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// ─── Points map ──────────────────────────────────────────────────────────────
+export type TypeCle = "clé" | "code" | "badge" | "autre";
+
+export interface PointMap {
+  id: string;
+  nom: string;
+  description?: string;
+  coordonnees?: string;
+  type_cle: TypeCle;
+  valeur_cle?: string;
+  contenu?: string;
+  image_url?: string;
+  territoire_id?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}

@@ -13,6 +13,10 @@ import {
   FlaskConical,
   Building2,
   MapPin,
+  CarFront,
+  Map,
+  ScrollText,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -33,6 +37,12 @@ const navIllegal = [
   { href: "/stocks", label: "Stocks illégaux", icon: FlaskConical },
   { href: "/business", label: "Business", icon: Building2 },
   { href: "/territoires", label: "Territoires", icon: MapPin },
+  { href: "/plaques", label: "Plaques", icon: CarFront },
+  { href: "/points", label: "Points map", icon: Map },
+];
+
+const navAdmin = [
+  { href: "/logs", label: "Logs", icon: ScrollText },
 ];
 
 const rangColors: Partial<Record<Rang, string>> = {
@@ -136,6 +146,29 @@ export function AppSidebar() {
             </Link>
           );
         })}
+
+        <div className="px-3 pt-4 pb-1">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">Admin</p>
+        </div>
+
+        {navAdmin.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href;
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all",
+                active
+                  ? "bg-primary/15 text-primary border border-primary/20"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <Icon className={cn("h-4 w-4 shrink-0", active && "text-primary")} />
+              {label}
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Footer */}
@@ -153,6 +186,18 @@ export function AppSidebar() {
             </div>
           </div>
         )}
+        <Link
+          href="/parametres"
+          className={cn(
+            "flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all",
+            pathname === "/parametres"
+              ? "bg-primary/15 text-primary border border-primary/20"
+              : "text-muted-foreground hover:bg-accent hover:text-foreground"
+          )}
+        >
+          <Settings className={cn("h-4 w-4 shrink-0", pathname === "/parametres" && "text-primary")} />
+          Paramètres
+        </Link>
         <button
           onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive"

@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Building2, Search } from "lucide-react";
+import { Plus, Trash2, Building2 } from "lucide-react";
 import type { Business, Membre, TypeBusiness } from "@/types";
 
 const typeLabels: Record<TypeBusiness, string> = {
@@ -111,59 +111,13 @@ export function BusinessClient({ business: initialBusiness, membres }: BusinessC
 
   const membreMap = Object.fromEntries(membres.map(m => [m.id, m.pseudo]));
 
-  const [search, setSearch] = useState("");
-  const [filterType, setFilterType] = useState<TypeBusiness | null>(null);
-  const TYPES = Object.keys(typeLabels) as TypeBusiness[];
-
-  const visible = business.filter((b) => {
-    const q = search.toLowerCase();
-    const matchSearch = q === "" || b.nom.toLowerCase().includes(q);
-    const matchType = filterType === null || b.type_business === filterType;
-    return matchSearch && matchType;
-  });
-
-  const totalRevenu = visible.reduce((sum, b) => sum + b.revenu_mensuel, 0);
-
   return (
     <div className="space-y-4">
-      {/* Top bar */}
-      <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={openCreate} className="shrink-0">
+      <div className="flex justify-end">
+        <Button onClick={openCreate}>
           <Plus className="mr-2 h-4 w-4" />
           Ajouter un business
         </Button>
-        <div className="relative flex-1 min-w-40">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <Input placeholder="Rechercher..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
-      </div>
-
-      {/* Type filters */}
-      <div className="flex flex-wrap gap-2">
-        {TYPES.map((t) => {
-          const active = filterType === t;
-          return (
-            <button
-              key={t}
-              onClick={() => setFilterType(active ? null : t)}
-              className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
-                active
-                  ? "bg-primary/20 text-primary border-primary/40"
-                  : "text-muted-foreground border-border hover:border-muted-foreground"
-              }`}
-            >
-              {typeLabels[t]}{active && " ✕"}
-            </button>
-          );
-        })}
-        {business.length > 0 && (
-          <span className="self-center text-xs text-muted-foreground ml-auto">
-            {visible.length} business{visible.length > 1 ? " · " : " · "}
-            <span className="text-green-400 font-semibold">
-              +{new Intl.NumberFormat("fr-FR").format(totalRevenu)}$/mois
-            </span>
-          </span>
-        )}
       </div>
 
       {business.length === 0 ? (
@@ -171,11 +125,9 @@ export function BusinessClient({ business: initialBusiness, membres }: BusinessC
           <Building2 className="mx-auto h-12 w-12 opacity-20 mb-3" />
           <p>Aucun business enregistré.</p>
         </div>
-      ) : visible.length === 0 ? (
-        <div className="text-center text-muted-foreground py-10 text-sm">Aucun business ne correspond aux filtres.</div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map((b) => (
+          {business.map((b) => (
             <Card
               key={b.id}
               className="cursor-pointer hover:border-border/80 transition-colors"
@@ -277,18 +229,18 @@ export function BusinessClient({ business: initialBusiness, membres }: BusinessC
               <div className="space-y-2">
                 <Label>Gérant</Label>
                 <Select value={form.gerant_id} onValueChange={(v) => setForm({ ...form, gerant_id: v ?? "" })}>
-                  <SelectTrigger><SelectValue placeholder="Aucun" /></SelectTrigger>
+                  <SelectTrigger><SelectValue>{(v: string) => v ? (membreMap[v] ?? v) : "Aucun"}</SelectValue></SelectTrigger>
                   <SelectContent>
                     {membres.map(m => (
-                      <SelectItem key={m.id} value={m.id} label={m.pseudo}>{m.pseudo}</SelectItem>
+                      <SelectItem key={m.id} value={m.id}>{m.pseudo}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label>Suspicion (1-5)</Label>
-                <Select value={form.niveau_suspicion} onValueChange={(v) => setForm({ ...form, niveau_suspicion: v ?? "" })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select value={form.niveau_suspicion} onValueChange={(v) => setForm({ ...form, niveau_suspicion: v ?? "1" })}>
+                  <SelectTrigger><SelectValue>{(v: string) => v ? `${v} — ${suspicionLabel(parseInt(v))}` : ""}</SelectValue></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">1 — Très bas</SelectItem>
                     <SelectItem value="2">2 — Bas</SelectItem>

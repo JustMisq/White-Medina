@@ -493,7 +493,7 @@ export function PlaquesClient({ plaques: initialPlaques, contacts }: PlaquesClie
                 value={form.contact_id || "_none"}
                 onValueChange={(v) => setForm((f) => ({ ...f, contact_id: !v || v === "_none" ? "" : v }))}
               >
-                <SelectTrigger><SelectValue placeholder="Aucun contact" /></SelectTrigger>
+                <SelectTrigger><SelectValue>{(v: string) => !v || v === "_none" ? "Aucun contact" : (getContactPseudo(v) ?? v)}</SelectValue></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="_none">Aucun</SelectItem>
                   {contacts.map((c) => (

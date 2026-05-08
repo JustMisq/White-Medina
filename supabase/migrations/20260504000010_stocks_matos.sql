@@ -12,6 +12,5 @@ create table if not exists stocks_matos (
 
 alter table stocks_matos enable row level security;
 
-DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'authenticated full access on stocks_matos' AND tablename = 'stocks_matos') THEN
-  CREATE POLICY "authenticated full access on stocks_matos" ON stocks_matos FOR ALL TO authenticated USING (true) WITH CHECK (true);
-END IF; END $$;
+create policy "authenticated full access on stocks_matos"
+  on stocks_matos for all to authenticated using (true) with check (true);

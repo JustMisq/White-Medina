@@ -394,7 +394,7 @@ export function PointsMapClient({ points: initialPoints, territoires }: PointsMa
                 onValueChange={(v) => setForm((f) => ({ ...f, territoire_id: !v || v === "_none" ? "" : v }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Aucun territoire" />
+                  <SelectValue>{(v: string) => !v || v === "_none" ? "Aucun territoire" : (getTerritoireNom(v) ?? v)}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="_none">Aucun</SelectItem>

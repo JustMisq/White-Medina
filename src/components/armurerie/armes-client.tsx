@@ -280,10 +280,10 @@ export function ArmesClient({ armes: initialArmes, membres }: ArmesClientProps) 
               <div className="space-y-2">
                 <Label>Assignée à</Label>
                 <Select value={form.membre_id} onValueChange={(v) => setForm({ ...form, membre_id: v ?? "" })}>
-                  <SelectTrigger><SelectValue placeholder="Non assignée" /></SelectTrigger>
+                  <SelectTrigger><SelectValue>{(v: string) => v ? (membreMap[v] ?? v) : "Non assignée"}</SelectValue></SelectTrigger>
                   <SelectContent>
                     {membres.map(m => (
-                      <SelectItem key={m.id} value={m.id} label={m.pseudo}>{m.pseudo}</SelectItem>
+                      <SelectItem key={m.id} value={m.id}>{m.pseudo}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

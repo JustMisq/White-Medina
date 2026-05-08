@@ -42,6 +42,7 @@ export function AddTransactionDialog({ membres }: AddTransactionDialogProps) {
   });
   const router = useRouter();
   const supabase = createClient();
+  const membreMap = Object.fromEntries(membres.map(m => [m.id, m.pseudo]));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,7 +178,7 @@ export function AddTransactionDialog({ membres }: AddTransactionDialogProps) {
               onValueChange={(v) => setForm({ ...form, membre_id: v ?? "" })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Aucun" />
+                <SelectValue>{(v: string) => v ? (membreMap[v] ?? v) : "Aucun"}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {membres.map((m) => (

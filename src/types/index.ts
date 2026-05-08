@@ -169,3 +169,41 @@ export interface Territoire {
   created_at: string;
   updated_at: string;
 }
+
+// ─── Permissions ────────────────────────────────────────────────────────────
+export type Section =
+  | "dashboard"
+  | "membres"
+  | "contacts"
+  | "plaques"
+  | "tresorerie"
+  | "operations"
+  | "armurerie"
+  | "stocks"
+  | "business"
+  | "territoires"
+  | "points";
+
+export const ALL_SECTIONS: Section[] = [
+  "dashboard",
+  "membres",
+  "contacts",
+  "plaques",
+  "tresorerie",
+  "operations",
+  "armurerie",
+  "stocks",
+  "business",
+  "territoires",
+  "points",
+];
+
+export const RANGS_GERES: Rang[] = [
+  "Bras Droit",
+  "Grand",
+  "Dealer",
+  "Petite Frappe",
+  "Nova",
+];
+
+export type PermissionsMap = Partial<Record<Section, { peut_voir: boolean; peut_modifier: boolean }>>;

@@ -9,6 +9,8 @@ export interface CreateMembreInput {
   email: string;
   password: string;
   pseudo: string;
+  nom_code?: string;
+  telephone_ig?: string;
   rang: Rang;
   statut: StatutMembre;
   points: number;
@@ -19,6 +21,8 @@ export interface CreateMembreInput {
 export interface UpdateMembreInput {
   id: string;
   pseudo: string;
+  nom_code?: string;
+  telephone_ig?: string;
   rang: Rang;
   statut: StatutMembre;
   points: number;
@@ -46,6 +50,8 @@ export async function createMembre(input: CreateMembreInput): Promise<{ error?: 
     .insert({
       user_id: userId,
       pseudo: input.pseudo,
+      nom_code: input.nom_code ?? null,
+      telephone_ig: input.telephone_ig ?? null,
       rang: input.rang,
       statut: input.statut,
       points: input.points,
@@ -76,6 +82,8 @@ export async function updateMembre(input: UpdateMembreInput): Promise<{ error?: 
     .from("membres")
     .update({
       pseudo: input.pseudo,
+      nom_code: input.nom_code ?? null,
+      telephone_ig: input.telephone_ig ?? null,
       rang: input.rang,
       statut: input.statut,
       points: input.points,

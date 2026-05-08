@@ -34,6 +34,7 @@ export function AddContactDialog({ tags }: AddContactDialogProps) {
   const [form, setForm] = useState({
     pseudo: "",
     faction: "",
+    telephone_ig: "",
     fiabilite: 3,
     notes: "",
   });
@@ -92,7 +93,7 @@ export function AddContactDialog({ tags }: AddContactDialogProps) {
   };
 
   const resetForm = () => {
-    setForm({ pseudo: "", faction: "", fiabilite: 3, notes: "" });
+    setForm({ pseudo: "", faction: "", telephone_ig: "", fiabilite: 3, notes: "" });
     setSelectedTags([]);
     setImages([]);
     setPreviews([]);
@@ -147,6 +148,15 @@ export function AddContactDialog({ tags }: AddContactDialogProps) {
                 onChange={(e) => setForm({ ...form, faction: e.target.value })}
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Téléphone IG <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
+            <Input
+              placeholder="(xxx)xxxx"
+              value={form.telephone_ig}
+              onChange={(e) => setForm({ ...form, telephone_ig: e.target.value })}
+            />
           </div>
 
           <div className="space-y-2">

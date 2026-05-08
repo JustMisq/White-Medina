@@ -8,38 +8,6 @@ export type Rang =
 
 export type StatutMembre = "actif" | "inactif" | "suspendu";
 
-// ─── Permissions ─────────────────────────────────────────────────────────────
-export const ALL_SECTIONS = [
-  "dashboard",
-  "membres",
-  "contacts",
-  "plaques",
-  "tresorerie",
-  "operations",
-  "armurerie",
-  "stocks",
-  "business",
-  "territoires",
-  "points",
-] as const;
-
-export type Section = (typeof ALL_SECTIONS)[number];
-
-export interface SectionPermission {
-  peut_voir: boolean;
-  peut_modifier: boolean;
-}
-
-export type PermissionsMap = Partial<Record<Section, SectionPermission>>;
-
-export const RANGS_GERES: Rang[] = [
-  "Bras Droit",
-  "Grand",
-  "Dealer",
-  "Petite Frappe",
-  "Nova",
-];
-
 export interface TagChamp {
   nom: string;
   placeholder: string;
@@ -66,6 +34,8 @@ export type CategorieTransaction =
 export interface Membre {
   id: string;
   pseudo: string;
+  nom_code?: string;
+  telephone_ig?: string;
   rang: Rang;
   statut: StatutMembre;
   points: number;
@@ -80,6 +50,7 @@ export interface Contact {
   id: string;
   pseudo: string;
   faction?: string;
+  telephone_ig?: string;
   tags: string[];
   images: string[];
   champs_custom: Record<string, Record<string, string>>;
@@ -197,53 +168,4 @@ export interface Territoire {
   notes?: string;
   created_at: string;
   updated_at: string;
-}
-
-// ─── Points de la Map ────────────────────────────────────────────────────────
-export type TypeCle = "clé" | "code" | "badge" | "autre";
-
-export interface PointMap {
-  id: string;
-  nom: string;
-  description?: string;
-  coordonnees?: string;
-  type_cle: TypeCle;
-  valeur_cle?: string;
-  contenu?: string;
-  image_url?: string;
-  territoire_id?: string;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// ─── Plaques d'immatriculation ───────────────────────────────────────────────
-export type TypeVehicule = "voiture" | "moto" | "camion" | "quad" | "autre";
-export type StatutPlaque = "légale" | "volée" | "fausse" | "inconnue";
-
-export interface Plaque {
-  id: string;
-  numero: string;
-  marque?: string;
-  modele?: string;
-  couleur?: string;
-  type_vehicule: TypeVehicule;
-  statut: StatutPlaque;
-  contact_id?: string;
-  image_url?: string;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// ─── Logs ────────────────────────────────────────────────────────────────────
-export interface Log {
-  id: string;
-  action: string;
-  section: string;
-  description: string;
-  auteur_id?: string;
-  auteur_pseudo?: string;
-  meta: Record<string, unknown>;
-  created_at: string;
 }

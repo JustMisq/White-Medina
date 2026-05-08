@@ -33,6 +33,7 @@ export function EditContactDialog({ contact, tags, open: controlledOpen, onOpenC
   const [form, setForm] = useState({
     pseudo: contact.pseudo,
     faction: contact.faction ?? "",
+    telephone_ig: contact.telephone_ig ?? "",
     fiabilite: contact.fiabilite,
     notes: contact.notes ?? "",
   });
@@ -137,7 +138,7 @@ export function EditContactDialog({ contact, tags, open: controlledOpen, onOpenC
     setOpen(v);
     if (!v) {
       // Reset à l'état initial du contact
-      setForm({ pseudo: contact.pseudo, faction: contact.faction ?? "", fiabilite: contact.fiabilite, notes: contact.notes ?? "" });
+      setForm({ pseudo: contact.pseudo, faction: contact.faction ?? "", telephone_ig: contact.telephone_ig ?? "", fiabilite: contact.fiabilite, notes: contact.notes ?? "" });
       setSelectedTags(contact.tags);
       setChampsValues(contact.champs_custom ?? {});
       setExistingImages(contact.images ?? []);
@@ -186,6 +187,15 @@ export function EditContactDialog({ contact, tags, open: controlledOpen, onOpenC
                   onChange={(e) => setForm({ ...form, faction: e.target.value })}
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Téléphone IG <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
+              <Input
+                placeholder="(xxx)xxxx"
+                value={form.telephone_ig}
+                onChange={(e) => setForm({ ...form, telephone_ig: e.target.value })}
+              />
             </div>
 
             {/* Tags */}

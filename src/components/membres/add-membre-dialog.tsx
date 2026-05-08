@@ -35,6 +35,8 @@ const defaultForm = {
   statut: "actif" as StatutMembre,
   points: 0,
   date_recrutement: new Date().toISOString().split("T")[0],
+  nom_code: "",
+  telephone_ig: "",
   notes: "",
 };
 
@@ -117,6 +119,25 @@ export function AddMembreDialog() {
                 onChange={(e) => setForm({ ...form, pseudo: e.target.value })}
                 required
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Nom de code <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
+                <Input
+                  placeholder="Ex: Fantôme, Le Vieux..."
+                  value={form.nom_code}
+                  onChange={(e) => setForm({ ...form, nom_code: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Téléphone IG <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
+                <Input
+                  placeholder="(xxx)xxxx"
+                  value={form.telephone_ig}
+                  onChange={(e) => setForm({ ...form, telephone_ig: e.target.value })}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

@@ -32,6 +32,8 @@ export function EditMembreDialog({ membre }: { membre: Membre }) {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     pseudo: membre.pseudo,
+    nom_code: membre.nom_code ?? "",
+    telephone_ig: membre.telephone_ig ?? "",
     rang: membre.rang,
     statut: membre.statut,
     points: membre.points,
@@ -82,6 +84,25 @@ export function EditMembreDialog({ membre }: { membre: Membre }) {
                 onChange={(e) => setForm({ ...form, pseudo: e.target.value })}
                 required
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Nom de code <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
+                <Input
+                  placeholder="Ex: Fantôme, Le Vieux..."
+                  value={form.nom_code}
+                  onChange={(e) => setForm({ ...form, nom_code: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Téléphone IG <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
+                <Input
+                  placeholder="(xxx)xxxx"
+                  value={form.telephone_ig}
+                  onChange={(e) => setForm({ ...form, telephone_ig: e.target.value })}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

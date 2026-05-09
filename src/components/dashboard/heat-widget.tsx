@@ -19,9 +19,10 @@ import type { HeatEvent } from "@/types";
 interface HeatWidgetProps {
   initialHeat: number;
   recentEvents: HeatEvent[];
+  canModifier?: boolean;
 }
 
-export function HeatWidget({ initialHeat, recentEvents }: HeatWidgetProps) {
+export function HeatWidget({ initialHeat, recentEvents, canModifier = true }: HeatWidgetProps) {
   const heat = Math.max(0, Math.min(100, initialHeat));
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -67,10 +68,12 @@ export function HeatWidget({ initialHeat, recentEvents }: HeatWidgetProps) {
               <Flame className={`h-4 w-4 ${heatColor}`} />
               Pression policière
             </CardTitle>
-            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1" onClick={() => setOpen(true)}>
-              <Plus className="h-3 w-3" />
-              Évènement
-            </Button>
+            {canModifier && (
+              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1" onClick={() => setOpen(true)}>
+                <Plus className="h-3 w-3" />
+                Évènement
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-3">

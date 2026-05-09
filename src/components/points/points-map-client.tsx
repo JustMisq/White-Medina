@@ -50,6 +50,7 @@ const typeCleIcons: Record<TypeCle, string> = {
 interface PointsMapClientProps {
   points: PointMap[];
   territoires: Pick<Territoire, "id" | "nom">[];
+  canModifier?: boolean;
 }
 
 const defaultForm = {
@@ -63,7 +64,7 @@ const defaultForm = {
   notes: "",
 };
 
-export function PointsMapClient({ points: initialPoints, territoires }: PointsMapClientProps) {
+export function PointsMapClient({ points: initialPoints, territoires, canModifier = true }: PointsMapClientProps) {
   const [points, setPoints] = useState(initialPoints);
   const [open, setOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<PointMap | null>(null);
@@ -207,12 +208,14 @@ export function PointsMapClient({ points: initialPoints, territoires }: PointsMa
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Ajouter un point
-        </Button>
-      </div>
+      {canModifier && (
+        <div className="flex justify-end">
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Ajouter un point
+          </Button>
+        </div>
+      )}
 
       {points.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-2">
@@ -238,11 +241,11 @@ export function PointsMapClient({ points: initialPoints, territoires }: PointsMa
               {points.map((p) => (
                 <TableRow
                   key={p.id}
-                  className="cursor-pointer"
-                  onClick={(e) => {
+                  className={canModifier ? "cursor-pointer" : undefined}
+                  onClick={canModifier ? (e) => {
                     if ((e.target as HTMLElement).closest("button")) return;
                     openEdit(p);
-                  }}
+                  } : undefined}
                 >
                   <TableCell>
                     {p.image_url ? (
@@ -298,7 +301,7 @@ export function PointsMapClient({ points: initialPoints, territoires }: PointsMa
                         <Button size="sm" variant="destructive" onClick={() => handleDelete(p.id)}>Suppr.</Button>
                         <Button size="sm" variant="outline" onClick={() => setConfirmingId(null)}>✕</Button>
                       </div>
-                    ) : (
+                    ) : canModifier ? (
                       <Button
                         size="sm"
                         variant="ghost"
@@ -307,7 +310,7 @@ export function PointsMapClient({ points: initialPoints, territoires }: PointsMa
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    )}
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))}

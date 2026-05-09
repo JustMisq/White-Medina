@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import type { Plaque, Contact } from "@/types";
 import { PlaquesClient } from "@/components/plaques/plaques-client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +14,7 @@ export default async function PlaquesPage() {
 
   const plaquesData = (plaques as Plaque[] | null) ?? [];
   const contactsData = (contacts as Pick<Contact, "id" | "pseudo">[] | null) ?? [];
+  const canModifier = await getCanModifier("plaques");
 
   const total = plaquesData.length;
   const volees = plaquesData.filter((p) => p.statut === "volée").length;
@@ -53,7 +55,7 @@ export default async function PlaquesPage() {
         </Card>
       </div>
 
-      <PlaquesClient plaques={plaquesData} contacts={contactsData} />
+      <PlaquesClient plaques={plaquesData} contacts={contactsData} canModifier={canModifier} />
     </div>
   );
 }

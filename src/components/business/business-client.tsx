@@ -43,9 +43,10 @@ const suspicionColor = (n: number) =>
 interface BusinessClientProps {
   business: Business[];
   membres: Membre[];
+  canModifier?: boolean;
 }
 
-export function BusinessClient({ business: initialBusiness, membres }: BusinessClientProps) {
+export function BusinessClient({ business: initialBusiness, membres, canModifier = true }: BusinessClientProps) {
   const [business, setBusiness] = useState(initialBusiness);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -113,12 +114,14 @@ export function BusinessClient({ business: initialBusiness, membres }: BusinessC
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Ajouter un business
-        </Button>
-      </div>
+      {canModifier && (
+        <div className="flex justify-end">
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Ajouter un business
+          </Button>
+        </div>
+      )}
 
       {business.length === 0 ? (
         <div className="text-center text-muted-foreground py-20">
@@ -130,11 +133,11 @@ export function BusinessClient({ business: initialBusiness, membres }: BusinessC
           {business.map((b) => (
             <Card
               key={b.id}
-              className="cursor-pointer hover:border-border/80 transition-colors"
-              onClick={(e) => {
+              className={`flex flex-col transition-colors ${canModifier ? "cursor-pointer hover:border-border/80" : ""}`}
+              onClick={canModifier ? (e) => {
                 if ((e.target as HTMLElement).closest("button")) return;
                 openEdit(b);
-              }}
+              } : undefined}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
@@ -147,7 +150,7 @@ export function BusinessClient({ business: initialBusiness, membres }: BusinessC
                       <Button size="sm" variant="destructive" onClick={() => handleDelete(b.id)}>Suppr.</Button>
                       <Button size="sm" variant="outline" onClick={() => setConfirmingId(null)}>✕</Button>
                     </div>
-                  ) : (
+                  ) : canModifier ? (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -156,7 +159,7 @@ export function BusinessClient({ business: initialBusiness, membres }: BusinessC
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">

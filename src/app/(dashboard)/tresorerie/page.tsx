@@ -11,6 +11,7 @@ import {
 import { TrendingDown, TrendingUp, Banknote, Skull } from "lucide-react";
 import type { CategorieTransaction, Membre, Transaction } from "@/types";
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import { AddTransactionDialog } from "@/components/tresorerie/add-transaction-dialog";
 
 const categorieColors: Record<CategorieTransaction, string> = {
@@ -44,6 +45,7 @@ export default async function TresorerePage() {
   const soldeSaleVal = (soldeSale as { solde: number } | null)?.solde ?? 0;
   const txs = (transactions as Transaction[] | null) ?? [];
   const membresMap = new Map((membres as Pick<Membre, "id" | "pseudo">[] | null)?.map((m) => [m.id, m.pseudo]) ?? []);
+  const canModifier = await getCanModifier("tresorerie");
 
   const entreesMois = txs
     .filter((t) => t.montant > 0 && t.created_at >= debutMois)
@@ -59,7 +61,7 @@ export default async function TresorerePage() {
           <h1 className="text-2xl font-bold">Trésorerie</h1>
           <p className="text-muted-foreground">Gestion des finances du gang</p>
         </div>
-        <AddTransactionDialog membres={(membres as Membre[]) ?? []} />
+        {canModifier && <AddTransactionDialog membres={(membres as Membre[]) ?? []} />}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

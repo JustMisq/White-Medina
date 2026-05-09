@@ -47,9 +47,10 @@ const etatLabels: Record<EtatArme, string> = {
 interface ArmesClientProps {
   armes: Arme[];
   membres: Membre[];
+  canModifier?: boolean;
 }
 
-export function ArmesClient({ armes: initialArmes, membres }: ArmesClientProps) {
+export function ArmesClient({ armes: initialArmes, membres, canModifier = true }: ArmesClientProps) {
   const [armes, setArmes] = useState(initialArmes);
   const [open, setOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Arme | null>(null);
@@ -140,12 +141,14 @@ export function ArmesClient({ armes: initialArmes, membres }: ArmesClientProps) 
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Enregistrer une arme
-        </Button>
-      </div>
+      {canModifier && (
+        <div className="flex justify-end">
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Enregistrer une arme
+          </Button>
+        </div>
+      )}
 
       <div className="rounded-lg border border-border">
         <Table>
@@ -169,7 +172,7 @@ export function ArmesClient({ armes: initialArmes, membres }: ArmesClientProps) 
                 </TableCell>
               </TableRow>
             ) : armes.map((a) => (
-              <TableRow key={a.id} className="cursor-pointer" onClick={(e) => { if ((e.target as HTMLElement).closest("button")) return; openEdit(a); }}>
+              <TableRow key={a.id} className={canModifier ? "cursor-pointer" : undefined} onClick={canModifier ? (e) => { if ((e.target as HTMLElement).closest("button")) return; openEdit(a); } : undefined}>
                 <TableCell className="font-medium">{a.type_arme}</TableCell>
                 <TableCell className="text-muted-foreground">{a.modele ?? "—"}</TableCell>
                 <TableCell>{a.calibre ?? "—"}</TableCell>
@@ -190,14 +193,15 @@ export function ArmesClient({ armes: initialArmes, membres }: ArmesClientProps) 
                   {a.membre_id ? (membreMap[a.membre_id] ?? "Inconnu") : "—"}
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-muted-foreground hover:text-foreground"
-                      onClick={() => openEdit(a)}
-                    >
-                      <Pencil className="h-4 w-4" />
+                  {canModifier && (
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={() => openEdit(a)}
+                      >
+                        <Pencil className="h-4 w-4" />
                     </Button>
                     {confirmingId === a.id ? (
                       <div className="flex gap-1">
@@ -215,6 +219,7 @@ export function ArmesClient({ armes: initialArmes, membres }: ArmesClientProps) 
                       </Button>
                     )}
                   </div>
+                )}
                 </TableCell>
               </TableRow>
             ))}

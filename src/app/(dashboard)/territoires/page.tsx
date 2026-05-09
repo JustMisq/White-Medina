@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import type { Territoire } from "@/types";
 import { TerritoiresClient } from "@/components/territoires/territoires-client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +13,7 @@ export default async function TerritoiresPage() {
     .order("created_at", { ascending: false });
 
   const data = (territoires as Territoire[] | null) ?? [];
+  const canModifier = await getCanModifier("territoires");
 
   const stable = data.filter(t => t.statut === "stable").length;
   const conteste = data.filter(t => t.statut === "contesté").length;
@@ -56,7 +58,7 @@ export default async function TerritoiresPage() {
         </Card>
       </div>
 
-      <TerritoiresClient territoires={data} />
+      <TerritoiresClient territoires={data} canModifier={canModifier} />
     </div>
   );
 }

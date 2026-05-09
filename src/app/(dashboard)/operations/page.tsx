@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import type { Membre, Operation, StatutOperation } from "@/types";
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import { AddOperationDialog } from "@/components/operations/add-operation-dialog";
 import { OperationsClient } from "@/components/operations/operations-client";
 
@@ -26,6 +27,7 @@ export default async function OperationsPage() {
   ]);
 
   const ops = (operations as Operation[] | null) ?? [];
+  const canModifier = await getCanModifier("operations");
 
   return (
     <div className="space-y-6">
@@ -36,7 +38,7 @@ export default async function OperationsPage() {
             {ops.length} opération{ops.length > 1 ? "s" : ""} enregistrée{ops.length > 1 ? "s" : ""}
           </p>
         </div>
-        <AddOperationDialog membres={(membres as Membre[]) ?? []} />
+        {canModifier && <AddOperationDialog membres={(membres as Membre[]) ?? []} />}
       </div>
 
       {/* Filtres statut */}
@@ -51,7 +53,7 @@ export default async function OperationsPage() {
         })}
       </div>
 
-      <OperationsClient ops={ops} membres={(membres as Membre[]) ?? []} />
+      <OperationsClient ops={ops} membres={(membres as Membre[]) ?? []} canModifier={canModifier} />
     </div>
   );
 }

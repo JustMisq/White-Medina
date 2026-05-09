@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import type { Arme, Membre } from "@/types";
 import { ArmesClient } from "@/components/armurerie/armes-client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +14,7 @@ export default async function ArmureriePage() {
 
   const armesData = (armes as Arme[] | null) ?? [];
   const membresData = (membres as Membre[] | null) ?? [];
+  const canModifier = await getCanModifier("armurerie");
 
   const total = armesData.length;
   const bonEtat = armesData.filter(a => a.etat === "bon").length;
@@ -53,7 +55,7 @@ export default async function ArmureriePage() {
         </Card>
       </div>
 
-      <ArmesClient armes={armesData} membres={membresData} />
+      <ArmesClient armes={armesData} membres={membresData} canModifier={canModifier} />
     </div>
   );
 }

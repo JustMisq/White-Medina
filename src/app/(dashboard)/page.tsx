@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Wallet, Swords, BookUser, CalendarDays } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import type { Operation, StatutOperation, Transaction, HeatEvent } from "@/types";
 import { HeatWidget } from "@/components/dashboard/heat-widget";
 
@@ -47,6 +48,7 @@ export default async function DashboardPage() {
   const heatEvents = (heatEventsRaw as HeatEvent[] | null) ?? [];
   const rawHeat = heatEvents.reduce((acc, ev) => acc + ev.impact, 0);
   const heatLevel = Math.max(0, Math.min(100, rawHeat));
+  const canModifier = await getCanModifier("dashboard");
 
   return (
     <div className="space-y-6">
@@ -101,7 +103,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <HeatWidget initialHeat={heatLevel} recentEvents={heatEvents} />
+        <HeatWidget initialHeat={heatLevel} recentEvents={heatEvents} canModifier={canModifier} />
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Prochaines opérations</CardTitle>

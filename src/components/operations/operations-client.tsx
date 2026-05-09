@@ -29,9 +29,10 @@ function formatMontant(n: number | null | undefined): string | null {
 interface OperationsClientProps {
   ops: Operation[];
   membres: Membre[];
+  canModifier?: boolean;
 }
 
-export function OperationsClient({ ops, membres }: OperationsClientProps) {
+export function OperationsClient({ ops, membres, canModifier = true }: OperationsClientProps) {
   const [editingOp, setEditingOp] = useState<Operation | null>(null);
 
   if (ops.length === 0) {
@@ -52,8 +53,8 @@ export function OperationsClient({ ops, membres }: OperationsClientProps) {
         {ops.map((op) => (
           <Card
             key={op.id}
-            className="flex flex-col cursor-pointer hover:border-border/80 transition-colors"
-            onClick={() => setEditingOp(op)}
+            className={`flex flex-col transition-colors ${canModifier ? "cursor-pointer hover:border-border/80" : ""}`}
+            onClick={canModifier ? () => setEditingOp(op) : undefined}
           >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
@@ -91,7 +92,7 @@ export function OperationsClient({ ops, membres }: OperationsClientProps) {
         ))}
       </div>
 
-      {editingOp && (
+      {editingOp && canModifier && (
         <EditOperationDialog
           operation={editingOp}
           membres={membres}

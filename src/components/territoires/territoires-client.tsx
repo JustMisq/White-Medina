@@ -47,9 +47,10 @@ const statutIcons: Record<StatutTerritoire, string> = {
 
 interface TerritoiresClientProps {
   territoires: Territoire[];
+  canModifier?: boolean;
 }
 
-export function TerritoiresClient({ territoires: initialTerritoires }: TerritoiresClientProps) {
+export function TerritoiresClient({ territoires: initialTerritoires, canModifier = true }: TerritoiresClientProps) {
   const [territoires, setTerritoires] = useState(initialTerritoires);
   const [open, setOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Territoire | null>(null);
@@ -184,12 +185,14 @@ export function TerritoiresClient({ territoires: initialTerritoires }: Territoir
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Ajouter un territoire
-        </Button>
-      </div>
+      {canModifier && (
+        <div className="flex justify-end">
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Ajouter un territoire
+          </Button>
+        </div>
+      )}
 
       {territoires.length === 0 ? (
         <div className="text-center text-muted-foreground py-20">
@@ -213,12 +216,11 @@ export function TerritoiresClient({ territoires: initialTerritoires }: Territoir
               {territoires.map((t) => (
                 <TableRow
                   key={t.id}
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    // don't open edit when clicking confirm/delete buttons
+                  className={canModifier ? "cursor-pointer" : undefined}
+                  onClick={canModifier ? (e) => {
                     if ((e.target as HTMLElement).closest("button")) return;
                     openEdit(t);
-                  }}
+                  } : undefined}
                 >
                   <TableCell>
                     {t.image_url ? (
@@ -252,7 +254,7 @@ export function TerritoiresClient({ territoires: initialTerritoires }: Territoir
                         <Button size="sm" variant="destructive" onClick={() => handleDelete(t.id)}>Suppr.</Button>
                         <Button size="sm" variant="outline" onClick={() => setConfirmingId(null)}>✕</Button>
                       </div>
-                    ) : (
+                    ) : canModifier ? (
                       <Button
                         size="sm"
                         variant="ghost"
@@ -261,7 +263,7 @@ export function TerritoiresClient({ territoires: initialTerritoires }: Territoir
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    )}
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))}

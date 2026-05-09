@@ -51,6 +51,7 @@ const typeVehiculeIcons: Record<TypeVehicule, string> = {
 interface PlaquesClientProps {
   plaques: Plaque[];
   contacts: Pick<Contact, "id" | "pseudo">[];
+  canModifier?: boolean;
 }
 
 const defaultForm = {
@@ -64,7 +65,7 @@ const defaultForm = {
   notes: "",
 };
 
-export function PlaquesClient({ plaques: initialPlaques, contacts }: PlaquesClientProps) {
+export function PlaquesClient({ plaques: initialPlaques, contacts, canModifier = true }: PlaquesClientProps) {
   const [plaques, setPlaques] = useState(initialPlaques);
   const [filterStatut, setFilterStatut] = useState<StatutPlaque | null>(null);
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
@@ -212,10 +213,12 @@ export function PlaquesClient({ plaques: initialPlaques, contacts }: PlaquesClie
     <div className="space-y-4">
       {/* Top bar: add + filters + view toggle */}
       <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={openCreate} className="shrink-0">
-          <Plus className="mr-2 h-4 w-4" />
-          Ajouter une plaque
-        </Button>
+        {canModifier && (
+          <Button onClick={openCreate} className="shrink-0">
+            <Plus className="mr-2 h-4 w-4" />
+            Ajouter une plaque
+          </Button>
+        )}
 
         {/* Statut filter pills */}
         <div className="flex flex-wrap gap-1.5 flex-1">
@@ -274,8 +277,8 @@ export function PlaquesClient({ plaques: initialPlaques, contacts }: PlaquesClie
           {visible.map((p) => (
             <div
               key={p.id}
-              className="rounded-xl border border-border bg-card flex flex-col overflow-hidden cursor-pointer hover:shadow-sm transition-all"
-              onClick={(e) => { if ((e.target as HTMLElement).closest("button")) return; openEdit(p); }}
+              className={`rounded-xl border border-border bg-card flex flex-col overflow-hidden transition-all ${canModifier ? "cursor-pointer hover:shadow-sm" : ""}`}
+              onClick={canModifier ? (e) => { if ((e.target as HTMLElement).closest("button")) return; openEdit(p); } : undefined}
             >
               {/* Photo or emoji placeholder */}
               {p.image_url ? (
@@ -310,11 +313,11 @@ export function PlaquesClient({ plaques: initialPlaques, contacts }: PlaquesClie
                       <Button size="sm" variant="destructive" onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }}>Suppr.</Button>
                       <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setConfirmingId(null); }}>✕</Button>
                     </>
-                  ) : (
+                  ) : canModifier ? (
                     <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -339,11 +342,11 @@ export function PlaquesClient({ plaques: initialPlaques, contacts }: PlaquesClie
               {visible.map((p) => (
                 <TableRow
                   key={p.id}
-                  className="cursor-pointer"
-                  onClick={(e) => {
+                  className={canModifier ? "cursor-pointer" : undefined}
+                  onClick={canModifier ? (e) => {
                     if ((e.target as HTMLElement).closest("button")) return;
                     openEdit(p);
-                  }}
+                  } : undefined}
                 >
                   <TableCell>
                     {p.image_url ? (
@@ -381,7 +384,7 @@ export function PlaquesClient({ plaques: initialPlaques, contacts }: PlaquesClie
                         <Button size="sm" variant="destructive" onClick={() => handleDelete(p.id)}>Suppr.</Button>
                         <Button size="sm" variant="outline" onClick={() => setConfirmingId(null)}>✕</Button>
                       </div>
-                    ) : (
+                    ) : canModifier ? (
                       <Button
                         size="sm"
                         variant="ghost"
@@ -390,7 +393,7 @@ export function PlaquesClient({ plaques: initialPlaques, contacts }: PlaquesClie
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    )}
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))}

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import type { StockDrogue, Munition, StockMatos } from "@/types";
 import { StocksClient } from "@/components/stocks/stocks-client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +20,7 @@ export default async function StocksPage() {
   const valeurTotale = stocksData.reduce((acc, s) => acc + s.quantite_g * (s.prix_revente_g ?? 0), 0);
   const totalMunitions = munitionsData.reduce((acc, m) => acc + m.quantite, 0);
   const totalMatos = matosData.reduce((acc, m) => acc + m.quantite, 0);
+  const canModifier = await getCanModifier("stocks");
 
   return (
     <div className="space-y-6">
@@ -56,7 +58,7 @@ export default async function StocksPage() {
         </Card>
       </div>
 
-      <StocksClient stocks={stocksData} munitions={munitionsData} matos={matosData} />
+      <StocksClient stocks={stocksData} munitions={munitionsData} matos={matosData} canModifier={canModifier} />
     </div>
   );
 }

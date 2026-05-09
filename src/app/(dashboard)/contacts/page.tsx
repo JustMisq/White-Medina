@@ -1,5 +1,6 @@
 import type { Contact, Tag } from "@/types";
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import { AddContactDialog } from "@/components/contacts/add-contact-dialog";
 import { ManageTagsDialog } from "@/components/contacts/manage-tags-dialog";
 import { ContactsTable } from "@/components/contacts/contacts-table";
@@ -10,6 +11,7 @@ export default async function ContactsPage() {
     supabase.from("tags").select("*").order("nom"),
     supabase.from("contacts").select("*").order("pseudo"),
   ]);
+  const canModifier = await getCanModifier("contacts");
 
   return (
     <div className="space-y-6">
@@ -20,15 +22,18 @@ export default async function ContactsPage() {
             {contacts?.length ?? 0} identité{(contacts?.length ?? 0) > 1 ? "s" : ""} enregistrée{(contacts?.length ?? 0) > 1 ? "s" : ""}
           </p>
         </div>
-        <div className="flex gap-2">
-          <ManageTagsDialog tags={tags as Tag[] ?? []} />
-          <AddContactDialog tags={tags as Tag[] ?? []} />
-        </div>
+        {canModifier && (
+          <div className="flex gap-2">
+            <ManageTagsDialog tags={tags as Tag[] ?? []} />
+            <AddContactDialog tags={tags as Tag[] ?? []} />
+          </div>
+        )}
       </div>
 
       <ContactsTable
         contacts={contacts as Contact[] ?? []}
         tags={tags as Tag[] ?? []}
+        canModifier={canModifier}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import type { Business, Membre } from "@/types";
 import { BusinessClient } from "@/components/business/business-client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +14,7 @@ export default async function BusinessPage() {
 
   const businessData = (business as Business[] | null) ?? [];
   const membresData = (membres as Membre[] | null) ?? [];
+  const canModifier = await getCanModifier("business");
 
   const revenusTotal = businessData.reduce((acc, b) => acc + b.revenu_mensuel, 0);
   const suspicionMoy = businessData.length > 0
@@ -51,7 +53,7 @@ export default async function BusinessPage() {
         </Card>
       </div>
 
-      <BusinessClient business={businessData} membres={membresData} />
+      <BusinessClient business={businessData} membres={membresData} canModifier={canModifier} />
     </div>
   );
 }

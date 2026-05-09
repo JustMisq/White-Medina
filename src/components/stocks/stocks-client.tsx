@@ -53,9 +53,10 @@ interface StocksClientProps {
   stocks: StockDrogue[];
   munitions: Munition[];
   matos: StockMatos[];
+  canModifier?: boolean;
 }
 
-export function StocksClient({ stocks: initialStocks, munitions: initialMunitions, matos: initialMatos }: StocksClientProps) {
+export function StocksClient({ stocks: initialStocks, munitions: initialMunitions, matos: initialMatos, canModifier = true }: StocksClientProps) {
   const [stocks, setStocks] = useState(initialStocks);
   const [munitions, setMunitions] = useState(initialMunitions);
   const [matos, setMatos] = useState(initialMatos);
@@ -169,12 +170,14 @@ export function StocksClient({ stocks: initialStocks, munitions: initialMunition
         </TabsList>
 
         <TabsContent value="drogue" className="mt-4 space-y-4">
-          <div className="flex justify-end">
-            <Button size="sm" onClick={() => { setFormDrogue({ produit: "herbe", quantite_g: "", prix_achat_g: "", prix_revente_g: "", notes: "" }); setOpenDrogue(true); }}>
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter
-            </Button>
-          </div>
+          {canModifier && (
+            <div className="flex justify-end">
+              <Button size="sm" onClick={() => { setFormDrogue({ produit: "herbe", quantite_g: "", prix_achat_g: "", prix_revente_g: "", notes: "" }); setOpenDrogue(true); }}>
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter
+              </Button>
+            </div>
+          )}
           <div className="rounded-lg border border-border">
             <Table>
               <TableHeader>
@@ -195,7 +198,7 @@ export function StocksClient({ stocks: initialStocks, munitions: initialMunition
                   const marge = (s.prix_revente_g ?? 0) - (s.prix_achat_g ?? 0);
                   const valeur = s.quantite_g * (s.prix_revente_g ?? 0);
                   return (
-                    <TableRow key={s.id} className="cursor-pointer" onClick={(e) => { if ((e.target as HTMLElement).closest("button")) return; openEditDrogue(s); }}>
+                    <TableRow key={s.id} className={canModifier ? "cursor-pointer" : undefined} onClick={canModifier ? (e) => { if ((e.target as HTMLElement).closest("button")) return; openEditDrogue(s); } : undefined}>
                       <TableCell><Badge variant="outline" className={produitColors[s.produit]}>{produitLabels[s.produit]}</Badge></TableCell>
                       <TableCell className="text-right font-mono">{s.quantite_g}g</TableCell>
                       <TableCell className="text-right font-mono text-muted-foreground">{s.prix_achat_g ?? 0}$</TableCell>
@@ -208,12 +211,12 @@ export function StocksClient({ stocks: initialStocks, munitions: initialMunition
                             <Button size="sm" variant="destructive" onClick={() => handleDeleteDrogue(s.id)}>Suppr.</Button>
                             <Button size="sm" variant="outline" onClick={() => setConfirmingDrogue(null)}>X</Button>
                           </div>
-                        ) : (
+                        ) : canModifier ? (
                           <div className="flex gap-1">
                             <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => openEditDrogue(s)}><Pencil className="h-4 w-4" /></Button>
                             <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-destructive" onClick={() => setConfirmingDrogue(s.id)}><Trash2 className="h-4 w-4" /></Button>
                           </div>
-                        )}
+                        ) : null}
                       </TableCell>
                     </TableRow>
                   );
@@ -224,12 +227,14 @@ export function StocksClient({ stocks: initialStocks, munitions: initialMunition
         </TabsContent>
 
         <TabsContent value="munitions" className="mt-4 space-y-4">
-          <div className="flex justify-end">
-            <Button size="sm" onClick={() => { setFormMunition({ calibre: "", quantite: "" }); setOpenMunition(true); }}>
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter
-            </Button>
-          </div>
+          {canModifier && (
+            <div className="flex justify-end">
+              <Button size="sm" onClick={() => { setFormMunition({ calibre: "", quantite: "" }); setOpenMunition(true); }}>
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter
+              </Button>
+            </div>
+          )}
           <div className="rounded-lg border border-border">
             <Table>
               <TableHeader>
@@ -243,7 +248,7 @@ export function StocksClient({ stocks: initialStocks, munitions: initialMunition
                 {munitions.length === 0 ? (
                   <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground py-10">Aucune munition en stock.</TableCell></TableRow>
                 ) : munitions.map((m) => (
-                  <TableRow key={m.id} className="cursor-pointer" onClick={(e) => { if ((e.target as HTMLElement).closest("button")) return; openEditMunition(m); }}>
+                  <TableRow key={m.id} className={canModifier ? "cursor-pointer" : undefined} onClick={canModifier ? (e) => { if ((e.target as HTMLElement).closest("button")) return; openEditMunition(m); } : undefined}>
                     <TableCell className="font-medium">{m.calibre}</TableCell>
                     <TableCell className="text-right font-mono">
                       <span className={m.quantite < 50 ? "text-red-400" : m.quantite < 200 ? "text-yellow-400" : "text-green-400"}>{m.quantite.toLocaleString()} unites</span>
@@ -254,12 +259,12 @@ export function StocksClient({ stocks: initialStocks, munitions: initialMunition
                           <Button size="sm" variant="destructive" onClick={() => handleDeleteMunition(m.id)}>Suppr.</Button>
                           <Button size="sm" variant="outline" onClick={() => setConfirmingMunition(null)}>X</Button>
                         </div>
-                      ) : (
+                      ) : canModifier ? (
                         <div className="flex gap-1">
                           <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => openEditMunition(m)}><Pencil className="h-4 w-4" /></Button>
                           <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-destructive" onClick={() => setConfirmingMunition(m.id)}><Trash2 className="h-4 w-4" /></Button>
                         </div>
-                      )}
+                      ) : null}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -275,10 +280,12 @@ export function StocksClient({ stocks: initialStocks, munitions: initialMunition
                 ? "Aucun article enregistré."
                 : `${matos.length} article${matos.length > 1 ? "s" : ""} — ${sortedCategories.length} catégorie${sortedCategories.length > 1 ? "s" : ""}`}
             </p>
-            <Button size="sm" onClick={openCreateMatos}>
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter
-            </Button>
+            {canModifier && (
+              <Button size="sm" onClick={openCreateMatos}>
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter
+              </Button>
+            )}
           </div>
 
           {matos.length === 0 ? (
@@ -331,7 +338,7 @@ export function StocksClient({ stocks: initialStocks, munitions: initialMunition
                     {visibleMatos.length === 0 ? (
                       <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-10">Aucun article dans cette catégorie.</TableCell></TableRow>
                     ) : visibleMatos.map((m) => (
-                      <TableRow key={m.id} className="cursor-pointer" onClick={(e) => { if ((e.target as HTMLElement).closest("button")) return; openEditMatos(m); }}>
+                      <TableRow key={m.id} className={canModifier ? "cursor-pointer" : undefined} onClick={canModifier ? (e) => { if ((e.target as HTMLElement).closest("button")) return; openEditMatos(m); } : undefined}>
                         {activeCategory === "__all__" && (
                           <TableCell>
                             <button
@@ -355,12 +362,12 @@ export function StocksClient({ stocks: initialStocks, munitions: initialMunition
                               <Button size="sm" variant="destructive" onClick={() => handleDeleteMatos(m.id)}>Suppr.</Button>
                               <Button size="sm" variant="outline" onClick={() => setConfirmingMatos(null)}>X</Button>
                             </div>
-                          ) : (
+                          ) : canModifier ? (
                             <div className="flex gap-1">
                               <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => openEditMatos(m)}><Pencil className="h-4 w-4" /></Button>
                               <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-destructive" onClick={() => setConfirmingMatos(m.id)}><Trash2 className="h-4 w-4" /></Button>
                             </div>
-                          )}
+                          ) : null}
                         </TableCell>
                       </TableRow>
                     ))}

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCanModifier } from "@/lib/supabase/permissions";
 import type { PointMap, Territoire } from "@/types";
 import { PointsMapClient } from "@/components/points/points-map-client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +14,7 @@ export default async function PointsMapPage() {
 
   const pointsData = (points as PointMap[] | null) ?? [];
   const territoiresData = (territoires as Pick<Territoire, "id" | "nom">[] | null) ?? [];
+  const canModifier = await getCanModifier("points");
 
   const totalPoints = pointsData.length;
   const avecCle = pointsData.filter((p) => p.valeur_cle).length;
@@ -53,7 +55,7 @@ export default async function PointsMapPage() {
         </Card>
       </div>
 
-      <PointsMapClient points={pointsData} territoires={territoiresData} />
+      <PointsMapClient points={pointsData} territoires={territoiresData} canModifier={canModifier} />
     </div>
   );
 }

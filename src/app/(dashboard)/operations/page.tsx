@@ -22,7 +22,7 @@ export default async function OperationsPage() {
   const supabase = await createClient();
   const [{ data: operations }, { data: membres }] = await Promise.all([
     supabase.from("operations").select("*").order("date_prevue", { ascending: true }),
-    supabase.from("membres").select("id, pseudo"),
+    supabase.from("membres").select("id, pseudo").neq("rang", "Staff"),
   ]);
 
   const ops = (operations as Operation[] | null) ?? [];

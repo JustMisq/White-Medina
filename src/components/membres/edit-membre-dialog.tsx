@@ -23,7 +23,7 @@ import { Pencil } from "lucide-react";
 import type { Membre, Rang, StatutMembre } from "@/types";
 import { updateMembre } from "@/actions/membres";
 
-const rangs: Rang[] = ["Gérant", "Bras Droit", "Grand", "Dealer", "Petite Frappe", "Nova"];
+const rangs: Rang[] = ["Gérant", "Bras Droit", "Grand", "Dealer", "Petite Frappe", "Nova", "Staff"];
 const statuts: StatutMembre[] = ["actif", "inactif", "suspendu"];
 
 export function EditMembreDialog({ membre }: { membre: Membre }) {

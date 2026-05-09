@@ -12,6 +12,7 @@ const rangStyle: Record<Rang, { bar: string; badge: string; label: string }> = {
   "Dealer":        { bar: "bg-yellow-500", badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", label: "Dealer" },
   "Petite Frappe": { bar: "bg-blue-500",   badge: "bg-blue-500/10 text-blue-400 border-blue-500/20",    label: "Petite Frappe" },
   "Nova":          { bar: "bg-zinc-500",   badge: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",    label: "Nova" },
+  "Staff":         { bar: "bg-zinc-600",   badge: "bg-zinc-600/10 text-zinc-400 border-zinc-600/20",    label: "Staff" },
 };
 
 const statutStyle: Record<StatutMembre, string> = {
@@ -25,7 +26,7 @@ export default async function MembresPage() {
 
   // Fetch membres + current user permissions
   const [{ data: membres }, { data: { user } }] = await Promise.all([
-    supabase.from("membres").select("*").order("rang").order("pseudo"),
+    supabase.from("membres").select("*").neq("rang", "Staff").order("rang").order("pseudo"),
     supabase.auth.getUser(),
   ]);
 

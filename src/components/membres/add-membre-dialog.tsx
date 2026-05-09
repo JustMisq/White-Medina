@@ -24,7 +24,7 @@ import { UserPlus } from "lucide-react";
 import type { Rang, StatutMembre } from "@/types";
 import { createMembre } from "@/actions/membres";
 
-const rangs: Rang[] = ["Gérant", "Bras Droit", "Grand", "Dealer", "Petite Frappe", "Nova"];
+const rangs: Rang[] = ["Gérant", "Bras Droit", "Grand", "Dealer", "Petite Frappe", "Nova", "Staff"];
 const statuts: StatutMembre[] = ["actif", "inactif", "suspendu"];
 
 const defaultForm = {

@@ -8,7 +8,7 @@ export default async function ArmureriePage() {
 
   const [{ data: armes }, { data: membres }] = await Promise.all([
     supabase.from("armes").select("*").order("created_at", { ascending: false }),
-    supabase.from("membres").select("id, pseudo").eq("statut", "actif"),
+    supabase.from("membres").select("id, pseudo").eq("statut", "actif").neq("rang", "Staff"),
   ]);
 
   const armesData = (armes as Arme[] | null) ?? [];

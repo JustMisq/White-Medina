@@ -4,7 +4,8 @@ export type Rang =
   | "Grand"
   | "Dealer"
   | "Petite Frappe"
-  | "Nova";
+  | "Nova"
+  | "Staff";
 
 export type StatutMembre = "actif" | "inactif" | "suspendu";
 

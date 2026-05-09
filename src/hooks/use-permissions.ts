@@ -12,6 +12,14 @@ function allPermissions(): PermissionsMap {
   return map;
 }
 
+function staffPermissions(): PermissionsMap {
+  const map: PermissionsMap = {};
+  ALL_SECTIONS.forEach((s) => {
+    map[s] = { peut_voir: true, peut_modifier: false };
+  });
+  return map;
+}
+
 export function usePermissions() {
   const [rang, setRang] = useState<string | null>(null);
   const [permissions, setPermissions] = useState<PermissionsMap | null>(null);
@@ -43,6 +51,12 @@ export function usePermissions() {
 
       if (membre.rang === "Gérant") {
         setPermissions(allPermissions());
+        setLoading(false);
+        return;
+      }
+
+      if (membre.rang === "Staff") {
+        setPermissions(staffPermissions());
         setLoading(false);
         return;
       }

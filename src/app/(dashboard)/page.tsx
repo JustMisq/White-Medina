@@ -32,7 +32,7 @@ export default async function DashboardPage() {
     { data: recentesTxs },
     { data: heatEventsRaw },
   ] = await Promise.all([
-    supabase.from("membres").select("id", { count: "exact", head: true }).eq("statut", "actif"),
+    supabase.from("membres").select("id", { count: "exact", head: true }).eq("statut", "actif").neq("rang", "Staff"),
     supabase.from("solde_tresorerie").select("solde").single(),
     supabase.from("operations").select("id", { count: "exact", head: true }).in("statut", ["prévu", "en_cours"]),
     supabase.from("contacts").select("id", { count: "exact", head: true }),

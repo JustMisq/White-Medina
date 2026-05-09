@@ -34,7 +34,7 @@ export default async function TresorerePage() {
 
   const [{ data: transactions }, { data: membres }, { data: soldePropre }, { data: soldeSale }] = await Promise.all([
     supabase.from("transactions").select("*").order("created_at", { ascending: false }).limit(50),
-    supabase.from("membres").select("id, pseudo"),
+    supabase.from("membres").select("id, pseudo").neq("rang", "Staff"),
     supabase.from("solde_propre").select("solde").single(),
     supabase.from("solde_sale").select("solde").single(),
   ]);

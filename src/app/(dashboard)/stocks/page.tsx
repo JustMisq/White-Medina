@@ -1,21 +1,25 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCanModifier } from "@/lib/supabase/permissions";
-import type { StockDrogue, Munition, StockMatos } from "@/types";
+import type { StockDrogue, Munition, StockMatos, VenteWeed, Membre } from "@/types";
 import { StocksClient } from "@/components/stocks/stocks-client";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default async function StocksPage() {
   const supabase = await createClient();
 
-  const [{ data: stocks }, { data: munitions }, { data: matos }] = await Promise.all([
+  const [{ data: stocks }, { data: munitions }, { data: matos }, { data: ventes }, { data: membres }] = await Promise.all([
     supabase.from("stocks_drogue").select("*").order("produit"),
     supabase.from("munitions").select("*").order("calibre"),
     supabase.from("stocks_matos").select("*").order("categorie").order("nom"),
+    supabase.from("ventes_weed").select("*, membre:membres(pseudo)").order("created_at", { ascending: false }),
+    supabase.from("membres").select("id, pseudo").eq("statut", "actif").order("pseudo"),
   ]);
 
   const stocksData = (stocks as StockDrogue[] | null) ?? [];
   const munitionsData = (munitions as Munition[] | null) ?? [];
   const matosData = (matos as StockMatos[] | null) ?? [];
+  const ventesData = (ventes as VenteWeed[] | null) ?? [];
+  const membresData = (membres as Pick<Membre, "id" | "pseudo">[] | null) ?? [];
 
   const valeurTotale = stocksData.reduce((acc, s) => acc + s.quantite_g * (s.prix_revente_g ?? 0), 0);
   const totalMunitions = munitionsData.reduce((acc, m) => acc + m.quantite, 0);
@@ -58,7 +62,7 @@ export default async function StocksPage() {
         </Card>
       </div>
 
-      <StocksClient stocks={stocksData} munitions={munitionsData} matos={matosData} canModifier={canModifier} />
+      <StocksClient stocks={stocksData} munitions={munitionsData} matos={matosData} ventes={ventesData} membres={membresData} canModifier={canModifier} />
     </div>
   );
 }

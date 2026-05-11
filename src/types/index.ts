@@ -110,7 +110,8 @@ export interface Munition {
 }
 
 // ─── Stocks illégaux ────────────────────────────────────────────────────────
-export type ProduitDrogue = "herbe" | "coke" | "meth" | "pills" | "autre";
+export type ProduitWeed = "og_kush" | "purple_haze" | "white_widow" | "blue_dream";
+export type ProduitDrogue = ProduitWeed | "coke" | "meth" | "pills" | "autre";
 
 export interface StockDrogue {
   id: string;
@@ -118,8 +119,20 @@ export interface StockDrogue {
   quantite_g: number;
   prix_achat_g?: number;
   prix_revente_g?: number;
+  prix_graine?: number;
   notes?: string;
   updated_at: string;
+}
+
+export interface VenteWeed {
+  id: string;
+  variete: ProduitWeed;
+  quantite_g: number;
+  prix_vente_g: number;
+  vendeur_id?: string;
+  notes?: string;
+  created_at: string;
+  membre?: { pseudo: string };
 }
 
 export interface StockMatos {

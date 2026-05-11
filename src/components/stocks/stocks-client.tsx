@@ -785,7 +785,7 @@ export function StocksClient({
             </div>
             <div className="space-y-2">
               <Label>Vendeur <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
-              <Select value={formVente.vendeur_id} onValueChange={(v) => setFormVente({ ...formVente, vendeur_id: v })}>
+              <Select value={formVente.vendeur_id} onValueChange={(v) => setFormVente({ ...formVente, vendeur_id: v ?? "" })}>
                 <SelectTrigger><SelectValue placeholder="Selectionner un membre..." /></SelectTrigger>
                 <SelectContent>
                   {membres.map((m) => (

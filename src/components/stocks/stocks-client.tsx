@@ -114,7 +114,7 @@ export function StocksClient({
       type_id: resolvedTypeId,
       produit: "autre",
       quantite_g: parseFloat(formDrogue.quantite_g) || 0,
-      prix_achat_g: parseFloat(formDrogue.prix_achat_g) || 0,
+      prix_achat_g: formDrogue.prix_achat_g ? parseFloat(formDrogue.prix_achat_g) : null,
       prix_revente_g: parseFloat(formDrogue.prix_revente_g) || 0,
       prix_graine: isWeed && formDrogue.prix_graine ? parseFloat(formDrogue.prix_graine) : null,
       notes: formDrogue.notes || null,
@@ -311,7 +311,9 @@ export function StocksClient({
                           })()}
                         </TableCell>
                         <TableCell className="text-right font-mono">{s.quantite_g} u</TableCell>
-                        <TableCell className="text-right font-mono text-muted-foreground">{s.prix_achat_g ?? 0}$</TableCell>
+                        <TableCell className="text-right font-mono text-muted-foreground">
+                          {s.prix_achat_g != null ? `${s.prix_achat_g}$` : <span className="text-green-500/70 text-xs">gratuit</span>}
+                        </TableCell>
                         <TableCell className="text-right font-mono">
                           {s.prix_revente_g ?? 0}$
                         </TableCell>
@@ -580,8 +582,8 @@ export function StocksClient({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Prix achat /u ($)</Label>
-                <Input type="number" min={0} step="0.01" placeholder="0" value={formDrogue.prix_achat_g} onChange={(e) => setFormDrogue({ ...formDrogue, prix_achat_g: e.target.value })} />
+                <Label>Prix achat /u ($) <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
+                <Input type="number" min={0} step="0.01" placeholder="Gratuit / source" value={formDrogue.prix_achat_g} onChange={(e) => setFormDrogue({ ...formDrogue, prix_achat_g: e.target.value })} />
               </div>
               <div className="space-y-2">
                 <Label>Prix revente /u ($)</Label>

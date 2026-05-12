@@ -15,6 +15,7 @@ const SECTION_LABELS: Record<Section, string> = {
   operations:  "Opérations",
   armurerie:   "Armurerie",
   stocks:      "Stocks",
+  ventes:      "Ventes",
   business:    "Business",
   territoires: "Territoires",
   points:      "Points map",

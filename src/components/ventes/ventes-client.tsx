@@ -123,7 +123,9 @@ export function VentesClient({
   }, [stocks, formVente.categorie_id, formVente.type_id]);
 
   const quantiteVendue = parseFloat(formVente.quantite) || 0;
-  const stockInsuffisant = selectedStock !== null && quantiteVendue > selectedStock.quantite_g;
+  const unitesVolees = parseInt(formVente.montant_vole) || 0;
+  const totalUnitesSortantes = quantiteVendue + unitesVolees;
+  const stockInsuffisant = selectedStock !== null && totalUnitesSortantes > selectedStock.quantite_g;
 
   const selectedCategoryTypes = useMemo(
     () => types.filter((t) => t.categorie_id === formVente.categorie_id),
@@ -142,7 +144,7 @@ export function VentesClient({
     () => filteredVentes.reduce((acc, v) => acc + v.total_recu, 0),
     [filteredVentes]
   );
-  const totalVole = useMemo(
+  const totalUnitsVoles = useMemo(
     () => filteredVentes.reduce((acc, v) => acc + (v.montant_vole ?? 0), 0),
     [filteredVentes]
   );
@@ -190,29 +192,14 @@ export function VentesClient({
       setOpenAdd(false);
       setFormVente(defaultForm);
 
-      // Déduire du stock
-      if (selectedStock && payload.quantite > 0) {
-        const newQty = Math.max(0, selectedStock.quantite_g - payload.quantite);
-        // Calcul du prix moyen de revente (pondéré sur toutes les ventes du produit)
-        const ventesLiees = [newVente, ...ventes].filter(
-          (v) =>
-            v.categorie_id === payload.categorie_id &&
-            (payload.type_id ? v.type_id === payload.type_id : !v.type_id) &&
-            v.quantite > 0
-        );
-        const totalRevenu = ventesLiees.reduce((s, v) => s + v.total_recu, 0);
-        const totalQty = ventesLiees.reduce((s, v) => s + v.quantite, 0);
-        const avgPrix = totalQty > 0 ? Math.round((totalRevenu / totalQty) * 100) / 100 : null;
-
-        const stockUpdate: Record<string, unknown> = {
-          quantite_g: newQty,
-          updated_at: new Date().toISOString(),
-        };
-        if (avgPrix !== null) stockUpdate.prix_revente_g = avgPrix;
+      // Déduire du stock : unités vendues + unités volées
+      if (selectedStock) {
+        const unitesRetrait = payload.quantite + (payload.montant_vole ?? 0);
+        const newQty = Math.max(0, selectedStock.quantite_g - unitesRetrait);
 
         const { data: updatedStock } = await supabase
           .from("stocks_drogue")
-          .update(stockUpdate)
+          .update({ quantite_g: newQty, updated_at: new Date().toISOString() })
           .eq("id", selectedStock.id)
           .select("*, categorie:produit_categories!categorie_id(nom,icone,couleur), type:produit_types!type_id(nom)")
           .single();
@@ -312,14 +299,14 @@ export function VentesClient({
         </div>
         <div className="rounded-lg border border-border bg-card px-4 py-3">
           <div
-            className={`text-xl font-bold ${totalVole > 0 ? "text-red-400" : "text-muted-foreground"}`}
+            className={`text-xl font-bold ${totalUnitsVoles > 0 ? "text-red-400" : "text-muted-foreground"}`}
           >
-            {totalVole > 0
-              ? `-${new Intl.NumberFormat("fr-FR").format(totalVole)}$`
+            {totalUnitsVoles > 0
+              ? `-${new Intl.NumberFormat("fr-FR").format(totalUnitsVoles)} u`
               : "—"}
           </div>
           <p className="text-xs text-muted-foreground">
-            Volé{filterCatId !== "__all__" ? " (filtré)" : ""}
+            Volé (unités){filterCatId !== "__all__" ? " (filtré)" : ""}
           </p>
         </div>
       </div>
@@ -398,7 +385,7 @@ export function VentesClient({
                     <TableCell className="text-right font-mono">
                       {v.montant_vole ? (
                         <span className="text-red-400">
-                          -{new Intl.NumberFormat("fr-FR").format(v.montant_vole)}$
+                          -{v.montant_vole} u
                         </span>
                       ) : (
                         <span className="text-muted-foreground/40">—</span>
@@ -551,10 +538,15 @@ export function VentesClient({
                     <span className={`font-mono font-semibold ${stockInsuffisant ? "text-red-400" : "text-foreground"}`}>
                       {selectedStock.quantite_g} u
                     </span>
+                    {totalUnitesSortantes > 0 && !stockInsuffisant && (
+                      <span className="ml-2 text-muted-foreground">
+                        → {Math.max(0, selectedStock.quantite_g - totalUnitesSortantes)} u restantes
+                      </span>
+                    )}
                     {stockInsuffisant && (
                       <span className="ml-2 inline-flex items-center gap-1">
                         <AlertCircle className="h-3.5 w-3.5" />
-                        Stock insuffisant
+                        Stock insuffisant ({totalUnitesSortantes} u demandées)
                       </span>
                     )}
                   </>
@@ -621,8 +613,11 @@ export function VentesClient({
                 <p className="text-xs text-muted-foreground">
                   Reste après vente :{" "}
                   <span className="font-mono text-foreground">
-                    {Math.max(0, selectedStock.quantite_g - quantiteVendue)} u
+                    {Math.max(0, selectedStock.quantite_g - totalUnitesSortantes)} u
                   </span>
+                  {unitesVolees > 0 && (
+                    <span className="ml-1 text-red-400/70">({quantiteVendue} vendues + {unitesVolees} volées)</span>
+                  )}
                 </p>
               )}
             </div>
@@ -667,16 +662,16 @@ export function VentesClient({
               )}
             </div>
 
-            {/* Montant volé */}
+            {/* Unités volées */}
             <div className="space-y-2">
               <Label>
-                Montant volé ($){" "}
+                Unités volées{" "}
                 <span className="text-xs text-muted-foreground">(optionnel)</span>
               </Label>
               <Input
                 type="number"
                 min={0}
-                step="0.01"
+                step={1}
                 placeholder="0"
                 value={formVente.montant_vole}
                 onChange={(e) =>
@@ -686,6 +681,11 @@ export function VentesClient({
                   }))
                 }
               />
+              {unitesVolees > 0 && selectedStock && (
+                <p className="text-xs text-red-400/80">
+                  Ces unités seront aussi retirées du stock.
+                </p>
+              )}
             </div>
 
             {/* Notes */}
@@ -719,7 +719,7 @@ export function VentesClient({
                   !formVente.categorie_id ||
                   !formVente.quantite ||
                   !formVente.total_recu ||
-                  stockInsuffisant
+                  stockInsuffisant || !formVente.total_recu
                 }
               >
                 {loadingVente ? "Enregistrement..." : "Enregistrer"}

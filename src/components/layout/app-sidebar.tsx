@@ -17,6 +17,7 @@ import {
   Map,
   ScrollText,
   Settings,
+  ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -35,6 +36,7 @@ const navMain = [
 const navIllegal = [
   { href: "/armurerie", label: "Armurerie", icon: Crosshair },
   { href: "/stocks", label: "Stocks illégaux", icon: FlaskConical },
+  { href: "/ventes", label: "Ventes", icon: ShoppingCart },
   { href: "/business", label: "Business", icon: Building2 },
   { href: "/territoires", label: "Territoires", icon: MapPin },
   { href: "/plaques", label: "Plaques", icon: CarFront },

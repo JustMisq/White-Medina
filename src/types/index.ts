@@ -116,12 +116,17 @@ export type ProduitDrogue = ProduitWeed | "coke" | "meth" | "pills" | "autre";
 export interface StockDrogue {
   id: string;
   produit: ProduitDrogue;
+  categorie_id?: string | null;
+  type_id?: string | null;
   quantite_g: number;
   prix_achat_g?: number;
   prix_revente_g?: number;
   prix_graine?: number;
   notes?: string;
   updated_at: string;
+  // joins
+  categorie?: Pick<ProduitCategorie, "nom" | "icone" | "couleur"> | null;
+  type?: Pick<ProduitType, "nom"> | null;
 }
 
 export interface VenteWeed {
@@ -184,6 +189,40 @@ export interface Territoire {
   updated_at: string;
 }
 
+// ─── Ventes génériques ──────────────────────────────────────────────────────
+export interface ProduitCategorie {
+  id: string;
+  nom: string;
+  icone: string;
+  couleur: string;
+  created_at: string;
+}
+
+export interface ProduitType {
+  id: string;
+  categorie_id: string;
+  nom: string;
+  created_at: string;
+}
+
+export interface Vente {
+  id: string;
+  categorie_id: string;
+  type_id?: string | null;
+  quantite: number;
+  unite: string;
+  prix_unitaire: number;
+  total_recu: number;
+  montant_vole?: number | null;
+  vendeur_id?: string | null;
+  notes?: string | null;
+  created_at: string;
+  // joins
+  categorie?: Pick<ProduitCategorie, "nom" | "icone" | "couleur"> | null;
+  type?: Pick<ProduitType, "nom"> | null;
+  vendeur?: { pseudo: string } | null;
+}
+
 // ─── Permissions ────────────────────────────────────────────────────────────
 export type Section =
   | "dashboard"
@@ -194,6 +233,7 @@ export type Section =
   | "operations"
   | "armurerie"
   | "stocks"
+  | "ventes"
   | "business"
   | "territoires"
   | "points";
@@ -207,6 +247,7 @@ export const ALL_SECTIONS: Section[] = [
   "operations",
   "armurerie",
   "stocks",
+  "ventes",
   "business",
   "territoires",
   "points",

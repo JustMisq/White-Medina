@@ -1,25 +1,25 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCanModifier } from "@/lib/supabase/permissions";
-import type { StockDrogue, Munition, StockMatos, VenteWeed, Membre } from "@/types";
+import type { StockDrogue, Munition, StockMatos, ProduitCategorie, ProduitType } from "@/types";
 import { StocksClient } from "@/components/stocks/stocks-client";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default async function StocksPage() {
   const supabase = await createClient();
 
-  const [{ data: stocks }, { data: munitions }, { data: matos }, { data: ventes }, { data: membres }] = await Promise.all([
-    supabase.from("stocks_drogue").select("*").order("produit"),
+  const [{ data: stocks }, { data: munitions }, { data: matos }, { data: categories }, { data: types }] = await Promise.all([
+    supabase.from("stocks_drogue").select("*, categorie:produit_categories!categorie_id(nom,icone,couleur), type:produit_types!type_id(nom)").order("produit"),
     supabase.from("munitions").select("*").order("calibre"),
     supabase.from("stocks_matos").select("*").order("categorie").order("nom"),
-    supabase.from("ventes_weed").select("*, membre:membres(pseudo)").order("created_at", { ascending: false }),
-    supabase.from("membres").select("id, pseudo").eq("statut", "actif").order("pseudo"),
+    supabase.from("produit_categories").select("*").order("nom"),
+    supabase.from("produit_types").select("*").order("nom"),
   ]);
 
   const stocksData = (stocks as StockDrogue[] | null) ?? [];
   const munitionsData = (munitions as Munition[] | null) ?? [];
   const matosData = (matos as StockMatos[] | null) ?? [];
-  const ventesData = (ventes as VenteWeed[] | null) ?? [];
-  const membresData = (membres as Pick<Membre, "id" | "pseudo">[] | null) ?? [];
+  const categoriesData = (categories as ProduitCategorie[] | null) ?? [];
+  const typesData = (types as ProduitType[] | null) ?? [];
 
   const valeurTotale = stocksData.reduce((acc, s) => acc + s.quantite_g * (s.prix_revente_g ?? 0), 0);
   const totalMunitions = munitionsData.reduce((acc, m) => acc + m.quantite, 0);
@@ -39,7 +39,7 @@ export default async function StocksPage() {
             <div className="text-2xl font-bold text-amber-400">
               {new Intl.NumberFormat("fr-FR").format(valeurTotale)}$
             </div>
-            <p className="text-sm text-muted-foreground">Valeur drogue (revente)</p>
+            <p className="text-sm text-muted-foreground">Valeur drogue (revente /u)</p>
           </CardContent>
         </Card>
         <Card>
@@ -62,7 +62,7 @@ export default async function StocksPage() {
         </Card>
       </div>
 
-      <StocksClient stocks={stocksData} munitions={munitionsData} matos={matosData} ventes={ventesData} membres={membresData} canModifier={canModifier} />
+      <StocksClient stocks={stocksData} munitions={munitionsData} matos={matosData} categories={categoriesData} types={typesData} canModifier={canModifier} />
     </div>
   );
 }
